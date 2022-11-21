@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <fenv.h>
 #include <stdlib.h>
+#include <fenv.h>
 #include <math.h>
 
 
@@ -26,7 +26,10 @@ void aff(struct Double_interval x);
 void validate();
 
 // Function declaration for test function
-void poly_root(char* a_s, char* b_s, char* c_s, struct Double_interval* res);
+struct Double_interval* poly_root(char* a_s, char* b_s, char* c_s);
+void validation_poly();
+struct Double_interval u_n(struct Double_interval u_n_m1, struct Double_interval u_n_m2);
+void validation_suite();
 
 // Structures
 struct Double_interval
@@ -294,9 +297,10 @@ void aff(struct Double_interval x)
     fesetround(original_rounding);
 }
 
-void poly_root(char* a_s, char* b_s, char* c_s, struct Double_interval* res)
+struct Double_interval* poly_root(char* a_s, char* b_s, char* c_s)
 {
     struct Double_interval a, b, c, nb_0, nb_2, nb_4, delta;
+    struct Double_interval* res = (struct Double_interval*) malloc(sizeof(struct Double_interval[2]));
 
     a = to_interval(a_s);
     b = to_interval(b_s);
@@ -321,23 +325,58 @@ void poly_root(char* a_s, char* b_s, char* c_s, struct Double_interval* res)
     {
         res[0] = res[1] = mult_r(sous_r(nb_0, b), inv_r(mult_r(nb_2, a)));
     }
-    aff(res[0]);
-    aff(res[1]);
+    return res;
 }
 
 void validation_poly()
 {
     struct Double_interval res[2];
 
-    poly_root("1.0", "2000", "-3.0", res);
+    aff(poly_root("1.0", "2000", "-3.0")[0]);
+    aff(poly_root("1.0", "2000", "-3.0")[1]);
 
-    poly_root("2.0", "-4000", "-1.0", res);
+    aff(poly_root("2.0", "-4000", "-1.0")[0]);
+    aff(poly_root("2.0", "-4000", "-1.0")[1]);
 
-    poly_root("5.0", "8000", "2.0", res);    
+    aff(poly_root("5.0", "8000", "2.0")[0]);
+    aff(poly_root("5.0", "8000", "2.0")[1]);    
+}
+
+struct Double_interval u_n(struct Double_interval u_n_m1, struct Double_interval u_n_m2)
+{
+    struct Double_interval n_111, n_1130, n_3000; 
+    struct Double_interval* res = (struct Double_interval*) malloc(sizeof(struct Double_interval));
+
+    n_111 = to_interval("111");
+    n_1130 = to_interval("1130");
+    n_3000 = to_interval("3000");
+
+    res[0] = add_r(sous_r(n_111, mult_r(n_1130, inv_r(u_n_m1))), mult_r(n_3000, inv_r(mult_r(u_n_m1, u_n_m2))));
+
+    return res[0];
+}
+
+void validation_suite()
+{
+    struct Double_interval u_n_m2 = to_interval("2");
+    struct Double_interval u_n_m1 = to_interval("-4");
+    struct Double_interval u_n_m0;
+
+    for(int i = 3; i <= 20; i++)
+    {
+        printf("%d ", i);
+        u_n_m0 = u_n(u_n_m1, u_n_m2);
+        u_n_m2 = u_n_m1;
+        u_n_m1 = u_n_m0;
+
+        aff(u_n_m0);
+        printf("\n");
+    }
 }
 
 // main
 int main(void)
 {
+    
     return 0;
 }
