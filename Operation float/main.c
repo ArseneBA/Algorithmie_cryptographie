@@ -30,6 +30,9 @@ struct Double_interval* poly_root(char* a_s, char* b_s, char* c_s);
 void validation_poly();
 struct Double_interval u_n(struct Double_interval u_n_m1, struct Double_interval u_n_m2);
 void validation_suite();
+//struct Double_interval gauss_pivot(struct Equation eq1, struct Equation eq2, struct Equation eq3);
+//void validation_gauss(void);
+
 
 // Structures
 struct Double_interval
@@ -37,6 +40,11 @@ struct Double_interval
     // d : lower bound
     // u : upper bound
     double d, u;
+};
+
+struct Equation
+{
+    struct Double_interval x, y, z, r;
 };
 
 // global variables
@@ -374,9 +382,63 @@ void validation_suite()
     }
 }
 
+struct Double_interval gauss_pivot(struct Equation eq1, struct Equation eq2, struct Equation eq3)
+{
+    struct Double_interval res;
+
+    struct Double_interval f1 = mult_r(eq2.x, inv_r(eq1.x));
+
+    eq2.y = sous_r(mult_r(f1, eq1.y), eq2.y);
+    eq2.z = sous_r(mult_r(f1, eq1.z), eq2.z);
+    eq2.r = sous_r(mult_r(f1, eq1.r), eq2.r);
+
+    struct Double_interval f2 = mult_r(eq3.x, inv_r(eq1.x));
+
+    eq3.y = sous_r(mult_r(f2, eq1.y), eq3.y);
+    eq3.z = sous_r(mult_r(f2, eq1.z), eq3.z);
+    eq3.r = sous_r(mult_r(f2, eq1.r), eq3.r);
+
+    struct Double_interval f3 = mult_r(eq3.y, inv_r(eq2.y));
+
+    eq3.z = sous_r(mult_r(f3, eq2.z), eq3.z);
+    eq3.r = sous_r(mult_r(f3, eq2.r), eq3.r);  
+
+    f3 = mult_r(eq2.z, inv_r(eq3.z));
+
+    printf("Partie non finie \n");
+
+    return res;  
+}
+
+void validation_gauss(void)
+{
+    struct Equation eq1;
+    struct Equation eq2;
+    struct Equation eq3;
+
+    eq1.x = to_interval("1");
+    eq1.y = to_interval("2");
+    eq1.z = to_interval("4");
+    eq1.r = to_interval("3");
+
+    eq2.x = to_interval("2");
+    eq2.y = to_interval("6");
+    eq2.z = to_interval("11");
+    eq2.r = to_interval("6");
+
+    eq3.x = to_interval("4");
+    eq3.y = to_interval("-2");
+    eq3.z = to_interval("-2");
+    eq3.r = to_interval("-6");
+
+    gauss_pivot(eq1, eq2, eq3);
+}
+
 // main
 int main(void)
 {
-    
+    validation_poly();
+    validation_suite();
+    validation_gauss();   
     return 0;
 }
