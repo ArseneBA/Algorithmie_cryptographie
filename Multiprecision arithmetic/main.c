@@ -6,47 +6,49 @@
 #include <x86intrin.h>
 #include <immintrin.h>
 
+#include "nus.h"
+#include "test.h"
+
 // Declaration of struct
+    //Number of undetermined size : nus
 typedef struct
 {
     unsigned long long* tab;
     unsigned int len;
-} Nb;
+} nus;
 
 
 // Declaration of functions
-void aff_Nb(const Nb* nb);
-void init_Nb(Nb **nb, int len);
-Nb* add(const Nb* a, const Nb* b);
+void nus_aff(const nus* nb);
+void nus_init(nus **nb, const unsigned int len);
+nus* nus_add(const nus* a, const nus* b);
 
 // Description of functions
-void init_Nb(Nb **nb, const int len)
+void nus_init(nus **nb, const unsigned int len)
 {
-    *nb = (Nb *) malloc(sizeof(Nb));
+    *nb = (nus *) malloc(sizeof(nus));
     (*nb)->tab = (unsigned long long *) malloc(sizeof(unsigned long long) * len);
     (*nb)->len = len;
 }
 
-void clear_Nb(Nb **nb)
+void nus_clear(nus **nb)
 {
     // To write
 }
 
-void test_init_Nb()
+void nus_check_size(nus *nb)
 {
-    Nb *a;
-    int size = 0xff;
-    init_Nb(&a, size);
-
-    for (int i=0; i < size; i++)
+    unsigned int head = nb->len - 1;
+    while (nb->tab[head] == 0)
+        head--;
+    if (head != nb->len - 1)
     {
-        a->tab[i] = i;
+        nb->tab = (unsigned long long*) realloc(nb->tab, sizeof(unsigned long long) * (head + 1));
+        nb->len = head + 1;
     }
-
-    aff_Nb(a);
 }
 
-void aff_Nb(const Nb* nb)
+void nus_aff(const nus* nb)
 {
     printf("[");
     for (int i = nb->len - 1; i >= 0; i--)
@@ -56,85 +58,43 @@ void aff_Nb(const Nb* nb)
     printf("]\n");
 }
 
-Nb* test(Nb* a, Nb* b)
+nus* nus_add(const nus* a, const nus* b)
 {
-    Nb* res;
-    unsigned int size = 2;
-    init_Nb(&res, size);
-    
-    return res;
-}
-
-Nb* add(const Nb* a, const Nb* b)
-{
-    Nb* res;
+    nus* res;
     unsigned int size;
     if (a->len > b->len)
     {
         printf("a\n");
-        init_Nb(&res, a->len + 1);
+        nus_init(&res, a->len + 1);
         printf("Oh nooo\n");
         size = a->len;
     }
     else
     {
         //printf("b\n");
-        init_Nb(&res, b->len + 1);
+        nus_init(&res, b->len + 1);
         size = b->len;
     }
     
     unsigned char r = 0;
 
-    for (int i = 0; i < size - 1; i++)
+    for (int i = 0; i < size; i++)
     {
+        printf("r_before = %hhu, ", r);
+        printf("a[%d] + a[%d] = %llu + %llu = ", i, i, a->tab[i], b->tab[i]);
         r = _addcarry_u64(r, a->tab[i], b->tab[i], &res->tab[i]);
+        printf("%llu, ", res->tab[i]);
+        printf("r_after = %hhu\n", r);
     }
     res->tab[size] = r;
 
     return res;
 }
 
-void test_add()
+/* nus* mul_Nb_long(const unsigned long long a_i, const nus* b)
 {
-    // test retenue
-    Nb *a;
-    init_Nb(&a, 3);
-    a->tab[0] = 0xffffffffffffffff;
-    a->tab[1] = 0x3;
-    a->tab[2] = 0xffffffffffffffff;
-
-    Nb* b;
-    init_Nb(&b, 3);
-    b->tab[0] = 0x1;
-    b->tab[1] = 0x5;
-    b->tab[3] = 0x1;
-
-    Nb* c;
-    c = test(a, b);
-
-    aff_Nb(c);
-
-/*    Nb *a;
-    init_Nb(&a, 3);
-    a->tab[0] = 0xffffffffffffffff;
-    a->tab[1] = 0xffffffffffffffff;
-    a->tab[2] = 0xffffffffffffffff;
-
-    Nb* b;
-    init_Nb(&b, 2);
-    b->tab[0] = 0x1;
-    b->tab[1] = 0x0;
-
-    Nb* c;
-    c = add(a, b);
-
-    aff_Nb(c); */
-}
-
-/* Nb* mul_Nb_long(const unsigned long long a_i, const Nb* b)
-{
-    Nb* res;
-    init_Nb(&res, b->len + 1);
+    nus* res;
+    nus_init(&res, b->len + 1);
 
     unsigned long long dl, dh;
 
@@ -160,27 +120,27 @@ void test_add()
 
 void test_add()
 {
-    Nb *a;
-    init_Nb(&a, 3);
+    nus *a;
+    nus_init(&a, 3);
     a->tab[0] = 0xffffffffffffffff;
     a->tab[1] = 0xffffffffffffffff;
     a->tab[2] = 0xffffffffffffffff;
 
-    Nb* b;
-    init_Nb(&b, 2);
+    nus* b;
+    nus_init(&b, 2);
     b->tab[0] = 0x1;
     b->tab[1] = 0x0;
 
-    Nb* c;
-    c = add(a, b);
+    nus* c;
+    c = nus_add(a, b);
 
-    aff_Nb(c);   
+    nus_aff(c);   
 }
  */
 
 int main()
 {
-    test_init_Nb();
+    test_nus_check_size();
 
     return 0;
 }
