@@ -21,7 +21,9 @@ void nus_init(nus **nb, const unsigned int len)
 
 void nus_clear(nus **nb)
 {
-    // To write
+    free((*nb)->tab);
+    free(*nb);
+    *nb = NULL;
 }
 
 void nus_check_size(nus *nb)

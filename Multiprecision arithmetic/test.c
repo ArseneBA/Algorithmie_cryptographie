@@ -16,14 +16,40 @@ void test_nus_init()
     nus_aff(a);
 }
 
+void test_nus_clear()
+{
+    nus *a;
+    unsigned int size = 0xff;
+    nus_init(&a, size);
+
+    for (unsigned int i=0; i < size; i++)
+    {
+        a->tab[i] = i;
+    }
+
+    nus_aff(a);
+
+    nus_clear(&a);
+
+    // Provoke a segmentation fault
+    printf("%u", a->len);
+
+    // Provoke a segmentation fault/ corrompt the memory
+    for (unsigned int i=0; i < size; i++)
+    {
+        a->tab[i] = i;
+    }
+}
+
 void test_nus_check_size()
 {
     nus* test;
     nus_init(&test, 10);
-    for (int i = 0; i < 10 - 1; i++)
+    for (int i = 0; i < 10 - 2; i++)
     {
         test->tab[i] = (unsigned long long) i;
     }
+    test->tab[8] = 0;
     test->tab[9] = 0;
 
     nus_aff(test);
