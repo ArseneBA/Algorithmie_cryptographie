@@ -15,34 +15,45 @@ typedef struct
 
 
 // Declaration of functions
-/* void aff_Nb(const Nb* nb);
+void aff_Nb(const Nb* nb);
 void init_Nb(Nb **nb, int len);
-Nb* add(const Nb* a, const Nb* b); */
+Nb* add(const Nb* a, const Nb* b);
 
 // Description of functions
-void init_Nb(Nb **nb, int len)
+void init_Nb(Nb **nb, const int len)
 {
     *nb = (Nb *) malloc(sizeof(Nb));
     (*nb)->tab = (unsigned long long *) malloc(sizeof(unsigned long long) * len);
     (*nb)->len = len;
 }
 
+void clear_Nb(Nb **nb)
+{
+    // To write
+}
+
 void test_init_Nb()
 {
     Nb *a;
-    init_Nb(&a, (const int) 3);
-    a->tab[0] = 0xffffffffffffffff;
-    a->tab[1] = 0x3;
-    a->tab[2] = 0xffffffffffffffff;
+    int size = 0xff;
+    init_Nb(&a, size);
+
+    for (int i=0; i < size; i++)
+    {
+        a->tab[i] = i;
+    }
+
+    aff_Nb(a);
 }
 
 void aff_Nb(const Nb* nb)
 {
+    printf("[");
     for (int i = nb->len - 1; i >= 0; i--)
     {
         printf("%llu ", nb->tab[i]);
     }
-    printf("\n");
+    printf("]\n");
 }
 
 Nb* test(Nb* a, Nb* b)
