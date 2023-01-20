@@ -56,7 +56,7 @@ void test_add()
 
 int main()
 {
-    test_nus_check_size();
-
+    test_nus_add();
+    
     return 0;
 }

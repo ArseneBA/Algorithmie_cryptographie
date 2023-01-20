@@ -14,6 +14,8 @@ void test_nus_init()
     }
 
     nus_aff(a);
+
+    nus_clear(&a);
 }
 
 void test_nus_clear()
@@ -57,8 +59,36 @@ void test_nus_check_size()
     nus_check_size(test);
 
     nus_aff(test);
+
+    nus_clear(&test);
 }
 
+void test_nus_check_size_bool()
+{
+    nus* test;
+    nus_init(&test, 10);
+    for (int i = 0; i < 10; i++)
+    {
+        test->tab[i] = (unsigned long long) i;
+    }
+
+    nus_aff(test);
+    char res = nus_check_size_bool(test);
+    if (res == 1)
+        printf("TRUE\n");
+    else
+        printf("FALSE\n");
+
+    test->tab[9] = 0;
+    nus_aff(test);
+    res = nus_check_size_bool(test);
+    if (res == 1)
+        printf("TRUE\n");
+    else
+        printf("FALSE\n");
+
+    nus_clear(&test);    
+}
 
 void test_nus_add()
 {
@@ -74,9 +104,12 @@ void test_nus_add()
     b->tab[0] = 0x1;
     b->tab[1] = 0x0;
     b->tab[2] = 0x1;
+    b->tab[3] = 0x1;
 
     nus* c;
     c = nus_add(a, b);
 
     nus_aff(c);
+
+    nus_clear(&a);
 }

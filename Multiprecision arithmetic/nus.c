@@ -38,35 +38,70 @@ void nus_check_size(nus *nb)
     }
 }
 
+char nus_check_size_bool(const nus *nb)
+{
+    unsigned int head = nb->len - 1;
+    while (nb->tab[head] == 0)
+        head--;
+    if (head == nb->len - 1)
+        return 1;
+    else
+        return 0;
+}
+
 nus* nus_add(const nus* a, const nus* b)
 {
     nus* res;
-    unsigned int size;
-    if (a->len > b->len)
+    unsigned int size_h, size_l;
+    char biggest;
+
+    // Per security, we check the size of a and b, if there were not the correct size an error (compile-time) will be raised
+    // because the const is not respected
+    if (nus_check_size_bool(a) == 1 && nus_check_size_bool(b) == 1)
     {
-        printf("a\n");
-        nus_init(&res, a->len + 1);
-        printf("Oh nooo\n");
-        size = a->len;
+        if (a->len > b->len)
+        {
+            nus_init(&res, a->len + 1);
+            size_h = a->len;
+            size_l = b->len;
+            biggest ='a';
+        }
+        else
+        {
+            //printf("b\n");
+            nus_init(&res, b->len + 1);
+            size_h = b->len;
+            size_l = a->len;
+            biggest = 'b';
+        }
+        
+        unsigned char r = 0;
+
+        for (int i = 0; i < size_l; i++)
+        {
+            printf("a[%d] + b[%d] + r = %llu + %llu + %hhu = ", i, i, a->tab[i], b->tab[i], r);
+            r = _addcarry_u64(r, a->tab[i], b->tab[i], &res->tab[i]);
+            printf("%llu, ", res->tab[i]);
+            printf("r_after = %hhu\n", r);
+        }
+        if (size_h != size_l)
+        {
+            for (int i = size_l; i < size_h; i++)
+            {
+                if (biggest == 'a')
+                    res->tab[i] = a->tab[i] + r;
+                else
+                    res->tab[i] = b->tab[i] + r;
+                r = 0;
+            }
+        }
+        else
+            res->tab[size_h] = r;
+
+        nus_check_size(res);
+
+        return res;
     }
     else
-    {
-        //printf("b\n");
-        nus_init(&res, b->len + 1);
-        size = b->len;
-    }
-    
-    unsigned char r = 0;
-
-    for (int i = 0; i < size; i++)
-    {
-        printf("r_before = %hhu, ", r);
-        printf("a[%d] + a[%d] = %llu + %llu = ", i, i, a->tab[i], b->tab[i]);
-        r = _addcarry_u64(r, a->tab[i], b->tab[i], &res->tab[i]);
-        printf("%llu, ", res->tab[i]);
-        printf("r_after = %hhu\n", r);
-    }
-    res->tab[size] = r;
-
-    return res;
+        perror("The size of a and/or b did not match their saved len");
 }

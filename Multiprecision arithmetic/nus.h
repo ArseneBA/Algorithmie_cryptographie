@@ -23,6 +23,7 @@ void nus_aff(const nus* nb);
 void nus_init(nus **nb, const unsigned int len);
 void nus_clear(nus **nb);
 void nus_check_size(nus *nb);
+char nus_check_size_bool(const nus *nb);
 nus* nus_add(const nus* a, const nus* b);
 
 #endif
