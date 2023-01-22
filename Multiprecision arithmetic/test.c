@@ -112,4 +112,23 @@ void test_nus_add()
     nus_aff(c);
 
     nus_clear(&a);
+    nus_clear(&b);
+}
+
+void test_nus_mul_llu()
+{
+    nus *b;
+    nus_init(&b, 3);
+    b->tab[0] = 0x8000000000000001;
+    b->tab[1] = 0x0;
+    b->tab[2] = 0x1;
+
+    unsigned long long a_i = 2;
+
+    nus* c;
+    c = nus_mul_llu(a_i, b);
+
+    nus_aff(c);
+
+    nus_clear(&b); 
 }

@@ -105,3 +105,42 @@ nus* nus_add(const nus* a, const nus* b)
     else
         perror("The size of a and/or b did not match their saved len");
 }
+
+nus* nus_mul_llu(const unsigned long long a_i, const nus* b)
+{
+    nus* res;
+    if (nus_check_size_bool(b) != 1)
+    {
+        perror("The size of a did not match its saved len");
+    }
+    
+    nus_init(&res, b->len + 1);
+
+    unsigned long long dl, dh;
+
+    res->tab[0] = 0;
+
+    __uint128_t mul_intermediate;
+    unsigned char retenue = 0, retenue_2 = 0;
+
+    for (int j = 0; j < b->len; j++)
+    {
+        mul_intermediate = (__uint128_t) a_i * b->tab[j];
+        dh = mul_intermediate >> 64;
+        dl = mul_intermediate;
+
+        retenue = _addcarry_u64((char) 0, res->tab[j], dl, &res->tab[j]);
+        res->tab[j+1] = dh;
+
+        retenue_2 = _addcarry_u64(retenue, res->tab[j+1], retenue_2, &res->tab[j+1]);
+    }
+
+    nus_check_size(res);
+
+    return res;
+}
+
+nus* nus_mul(const nus* a, const nus* b)
+{
+
+}

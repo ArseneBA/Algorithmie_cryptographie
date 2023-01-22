@@ -25,5 +25,7 @@ void nus_clear(nus **nb);
 void nus_check_size(nus *nb);
 char nus_check_size_bool(const nus *nb);
 nus* nus_add(const nus* a, const nus* b);
+nus* nus_mul_llu(const unsigned long long a_i, const nus* b);
+nus* nus_mul(const nus* a, const nus* b);
 
 #endif

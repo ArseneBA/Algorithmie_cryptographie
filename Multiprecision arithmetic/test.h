@@ -10,5 +10,6 @@ void test_nus_clear();
 void test_nus_check_size();
 void test_nus_check_size_bool();
 void test_nus_add();
+void test_nus_mul_llu();
 
 #endif
