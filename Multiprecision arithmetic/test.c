@@ -92,7 +92,6 @@ void test_nus_check_size_bool()
 
 void test_nus_add()
 {
-    // test retenue
     nus *a;
     nus_init(&a, 3);
     a->tab[0] = 0xffffffffffffffff;
@@ -123,12 +122,55 @@ void test_nus_mul_llu()
     b->tab[1] = 0x0;
     b->tab[2] = 0x1;
 
-    unsigned long long a_i = 2;
+    unsigned long long a_i = 0;
 
     nus* c;
     c = nus_mul_llu(a_i, b);
 
     nus_aff(c);
 
+    nus_clear(&b); 
+}
+
+void test_nus_shift_left()
+{
+    nus* a;
+    nus_init(&a, 4);
+    a->tab[0] = 0x1;
+    a->tab[1] = 0x2;
+    a->tab[2] = 0x3;
+    a->tab[3] = 0x4;
+    
+    nus* b;
+    b = nus_shift_left(a, 2);
+
+    nus_aff(a);
+    nus_aff(b);
+
+    nus_clear(&a);
+    nus_clear(&b);
+}
+
+void test_nus_mul()
+{
+    nus *a;
+    nus_init(&a, 3);
+    a->tab[0] = 0x1;
+    a->tab[1] = 0x0;
+    a->tab[2] = 0x1;
+
+    nus* b;
+    nus_init(&b, 4);
+    b->tab[0] = 0x0;
+    b->tab[1] = 0x0;
+    b->tab[2] = 0x0;
+    b->tab[3] = 0x0;
+
+    nus* c;
+    c = nus_mul(a, b);
+
+    nus_aff(c);
+
+    nus_clear(&a);
     nus_clear(&b); 
 }
