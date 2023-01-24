@@ -49,7 +49,7 @@ void test_nus_check_size()
     nus_init(&test, 10);
     for (int i = 0; i < 10 - 2; i++)
     {
-        test->tab[i] = (unsigned long long) i;
+        test->tab[i] = (unsigned long long) 0;
     }
     test->tab[8] = 0;
     test->tab[9] = 0;
@@ -114,6 +114,35 @@ void test_nus_add()
     nus_clear(&b);
 }
 
+void test_nus_sub()
+{
+    // <*> Sub by 0
+    // <*> 2 equals nb
+    // <*> simple sub (without carry)
+    // <*> b>a, (more len and greater with same length)
+    // <*> Sub with carry  
+    nus *a;
+    nus_init(&a, 3);
+    a->tab[0] = 0x8;
+    a->tab[1] = 0x0;
+    a->tab[2] = 0x2;
+
+    nus* b;
+    nus_init(&b, 3);
+    b->tab[0] = 0x10;
+    b->tab[1] = 0x0;
+    b->tab[2] = 0x1;
+
+    nus* c;
+    c = nus_sub(a, b);
+
+    nus_aff_x(c);
+
+    nus_clear(&a);
+    nus_clear(&b);
+    nus_clear(&c);
+}
+
 void test_nus_mul_llu()
 {
     nus *b;
@@ -132,18 +161,19 @@ void test_nus_mul_llu()
     nus_clear(&b); 
 }
 
-void test_nus_shift_left()
+void test_nus_shift_b64_left()
 {
     nus* a;
-    nus_init(&a, 4);
+    nus_init(&a, 2);
     a->tab[0] = 0x1;
     a->tab[1] = 0x2;
-    a->tab[2] = 0x3;
-    a->tab[3] = 0x4;
+    //a->tab[2] = 0x3;
+    //a->tab[3] = 0x4;
     
     nus* b;
-    b = nus_shift_left(a, 2);
-
+    b = nus_shift_b64_left(a, 1);
+    nus* test;
+    nus_init(&test, 10);
     nus_aff(a);
     nus_aff(b);
 
@@ -173,4 +203,63 @@ void test_nus_mul()
 
     nus_clear(&a);
     nus_clear(&b); 
+}
+
+void test_nus_shift_b2_right()
+{
+    nus *a;
+    nus_init(&a, 3);
+    a->tab[0] = 0xff;
+    a->tab[1] = 0b1000;
+    a->tab[2] = 0xff;
+
+    nus_aff(a);
+
+    nus_shift_b2_right(a, 191);
+
+    nus_aff(a);
+
+    nus_clear(&a);
+}
+
+void test_nus_comp()
+{
+    nus *a;
+    nus_init(&a, 3);
+    a->tab[0] = 0x0;
+    a->tab[1] = 0x0;
+    a->tab[2] = 0x1;
+
+    nus* b;
+    nus_init(&b, 3);
+    b->tab[0] = 0x0;
+    b->tab[1] = 0x0;
+    b->tab[2] = 0x1;
+
+    char c;
+    c = nus_comp(a, b);
+
+    printf("%x\n", c);
+
+    nus_clear(&a);
+    nus_clear(&b);    
+}
+
+void test_nus_mod()
+{
+    nus *m;
+    nus_init(&m, 4);
+    m->tab[0] = 0xfe56dc48ab;
+    m->tab[1] = 0xe1234567;
+    m->tab[2] = 0x123456;
+    m->tab[3] = 0x250;
+
+    nus* res1, *res2;
+    res1 = nus_mod(m);
+    nus_aff_x(res1);
+
+    res2 = nus_mod_naive(m);
+    nus_aff_x(res2);
+
+    nus_clear(&m);
 }

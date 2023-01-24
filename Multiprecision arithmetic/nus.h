@@ -20,15 +20,23 @@ typedef struct
 
 // Declaration of functions
 void nus_aff(const nus* nb);
+void nus_aff_x(const nus* nb);
 void nus_init(nus **nb, const unsigned int len);
 void nus_init_0(nus **nb, const unsigned int len);
 void nus_clear(nus **nb);
-void nus_cp(nus* src, nus* dest);
+void nus_cp(const nus* src, nus* dest);
 void nus_check_size(nus *nb);
 char nus_check_size_bool(const nus *nb);
+char nus_is_zero(const nus* a);
 nus* nus_add(const nus* a, const nus* b);
+nus* nus_sub(const nus* a, const nus* b);
 nus* nus_mul_llu(const unsigned long long a_i, const nus* b);
-nus* nus_shift_left(nus* a, const unsigned int shift);
+nus* nus_shift_b64_left(const nus* a, const unsigned int shift);
+void nus_shift_b2_right(nus* a, const unsigned int shift);
+char nus_comp(const nus* a, const nus* b);
 nus* nus_mul(const nus* a, const nus* b);
+nus* nus_mod(const nus* m);
+nus* nus_mod_naive(const nus* m);
+nus* nus_mul_mod(const nus* a, const nus* b, const nus* p);
 
 #endif

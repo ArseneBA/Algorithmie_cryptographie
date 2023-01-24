@@ -9,6 +9,6 @@
 // Program
 int main()
 {
-    test_nus_mul();
+    test_nus_mod();
     return 0;
 }
