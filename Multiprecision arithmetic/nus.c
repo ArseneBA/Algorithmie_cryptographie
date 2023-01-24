@@ -5,7 +5,7 @@
 void nus_aff(const nus* nb)
 {
     printf("[");
-    for (unsigned int i = nb->len - 1; i >= 0; i--)
+    for (int i = nb->len - 1; i >= 0; i--)
     {
         printf("%llu ", nb->tab[i]);
     }
@@ -15,7 +15,7 @@ void nus_aff(const nus* nb)
 void nus_aff_x(const nus* nb)
 {
     printf("[");
-    for (unsigned int i = nb->len - 1; i >= 0; i--)
+    for (int i = nb->len - 1; i >= 0; i--)
     {
         printf("%llx ", nb->tab[i]);
     }
@@ -33,7 +33,7 @@ void nus_init_0(nus **nb, const unsigned int len)
 {
     nus_init(nb, len);
 
-    for (unsigned int i = 0; i < len; i++)
+    for (int i = 0; i < len; i++)
         (*nb)->tab[i] = 0;
 }
 
@@ -49,7 +49,7 @@ void nus_cp(const nus* src, nus* dest)
     if (src->len > dest->len)
         perror("Destination must be longer than source");
     
-    for (unsigned int i = 0; i < src->len; i++)
+    for (int i = 0; i < src->len; i++)
         dest->tab[i] = src->tab[i];
 }
 
@@ -110,13 +110,13 @@ nus* nus_add(const nus* a, const nus* b)
     
     unsigned char r = 0;
 
-    for (unsigned int i = 0; i < size_l; i++)
+    for (int i = 0; i < size_l; i++)
     {
         r = _addcarry_u64(r, a->tab[i], b->tab[i], &res->tab[i]);
     }
     if (size_h != size_l)
     {
-        for (unsigned int i = size_l; i < size_h; i++)
+        for (int i = size_l; i < size_h; i++)
         {
             if (biggest == 'a')
                 res->tab[i] = a->tab[i] + r;
@@ -154,13 +154,13 @@ nus* nus_sub(const nus* a, const nus* b)
     size_l = b->len;    
 
     unsigned char r = 0;
-    for (unsigned int i = 0; i < size_l; i++)
+    for (int i = 0; i < size_l; i++)
     {
         r = _subborrow_u64(r, a->tab[i], b->tab[i], &res->tab[i]);
     }
     if (size_h != size_l)
     {
-        for (unsigned int i = size_l; i < size_h; i++)
+        for (int i = size_l; i < size_h; i++)
         {
             res->tab[i] = a->tab[i] - r;
             r = 0;
@@ -187,7 +187,7 @@ nus* nus_mul_llu(const unsigned long long a_i, const nus* b)
     __uint128_t mul_intermediate;
     unsigned char retenue = 0, retenue_2 = 0;
 
-    for (unsigned int j = 0; j < b->len; j++)
+    for (int j = 0; j < b->len; j++)
     {
         mul_intermediate = (__uint128_t) a_i * b->tab[j];
         dh = mul_intermediate >> 64;
@@ -212,16 +212,18 @@ nus* nus_shift_b64_left(const nus* a, const unsigned int shift)
 
     unsigned long long next_part, prv_part; 
 
-    for (unsigned int i = 0; i < shift; i++)
+    prv_part = 0;
+
+    for (int i = 0; i < shift; i++) // Error is here, why 5 ???
     {
-        prv_part = 0;
-        for (unsigned int j = 0; j < a->len + shift; j++)
+        for (int j = -1; j < 5; j++)
         {
-            next_part = res->tab[j];
-            res->tab[j] = prv_part;
+            next_part = res->tab[i];
+            res->tab[i] = prv_part;
             prv_part = next_part;
         }
     }
+
     return res;
 }
 
@@ -240,7 +242,7 @@ nus* nus_mul(const nus* a, const nus* b)
     nus* test;
     nus_init(&test, 10);
 
-    for (unsigned int i = 0; i < a->len ; i++)
+    for (int i = 0; i < a->len ; i++)
     {
         temp = nus_mul_llu(a->tab[i], b);
         
@@ -264,7 +266,7 @@ nus* nus_mul(const nus* a, const nus* b)
    return res_new;
 }
 
-/* void nus_shift_b2_right(nus* a, const unsigned int shift) // Works only if shift < 64
+void nus_shift_b2_right(nus* a, const unsigned int shift)
 {
     unsigned long long ret_last = 0;
     unsigned long long ret_next;
@@ -274,7 +276,7 @@ nus* nus_mul(const nus* a, const nus* b)
 
     if (shift != 0)
     {
-        for (unsigned int i = a->len - 1; i >= 0; i--)
+        for (int i = a->len - 1; i >= 0; i--)
         {
             ret_next = (a->tab[i] & mask) << (64 - shift);
             a->tab[i] = a->tab[i] >> shift;
@@ -285,44 +287,12 @@ nus* nus_mul(const nus* a, const nus* b)
     nus_aff_x(a);
     nus_check_size(a);
     nus_aff_x(a);
-} */
-
-/* void nus_shift_b2_right(nus* a, const unsigned int shift)
-{
-    unsigned int offset = (unsigned int) shift/64;
-
-    nus *ret_last, *ret_next;
-    nus_init_0(&ret_next, offset + 1);
-    nus_init_0(&ret_last, offset + 1);
-
-    unsigned long long mask = 0;
-    mask = mask | ((1 << 64 - (shift - offset * 64)) - 1);
-
-    if (shift != 0)
-    {
-        for (unsigned int i = a->len - 1; i >= 0; i--)
-        {
-            for (unsigned int i = offset; i >= 0; i--)
-            {
-                ret
-            }
-            ret_next = (a->tab[i] & mask) << (64 - shift);
-            a->tab[i] = a->tab[i] >> shift;
-            a->tab[i] = a->tab[i] | ret_last;
-            ret_last = ret_next;
-        }
-    }
-    nus_aff_x(a);
-    nus_check_size(a);
-    nus_aff_x(a);
-} */
-
-void nus_shift_b2_right
+}
 
 char nus_is_zero(const nus* a)
 {
     // Return 0 if not, 1 if a = 0
-    for (unsigned int i = 0; i < a->len; i++)
+    for (int i = 0; i < a->len; i++)
     {
         if (a->tab[i] != 0)
             return 0;
@@ -347,7 +317,7 @@ char nus_comp(const nus* a, const nus* b)
         return 2;
     else if(a->len < b->len)
         return 0;
-    for (unsigned int i = a->len - 1; i >= 0; i--)
+    for (int i = a->len - 1; i >= 0; i--)
     {
         if (a->tab[i] > b->tab[i])
             return 2;
@@ -426,7 +396,7 @@ nus* nus_mod_naive(const nus* m)
 
     nus_init_0(&q, 1);
 
-    for (unsigned int i = 0; i < p->len; i++ )
+    for (int i = 0; i < p->len; i++ )
     {
         mul1 = nus_mul(a->tab[i], b->tab[0]);
         add1 = nus_add(res->tab[0], mul1);
