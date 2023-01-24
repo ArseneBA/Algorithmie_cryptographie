@@ -249,12 +249,9 @@ nus* nus_mul(const nus* a, const nus* b)
         nus_init(&test, 10);
         
         temp_o = temp;
-        printf("temp ");
-        nus_aff_x(temp);
         temp = nus_shift_b64_left(temp, i);
         
         nus_init(&test, 10);
-        printf("pass\n");
 
         nus_clear(&temp_o);
         res_new = nus_add(res_old, temp);
@@ -284,9 +281,7 @@ void nus_shift_b2_right(nus* a, const unsigned int shift)
             ret_last = ret_next;
         }
     }
-    nus_aff_x(a);
     nus_check_size(a);
-    nus_aff_x(a);
 }
 
 char nus_is_zero(const nus* a)
