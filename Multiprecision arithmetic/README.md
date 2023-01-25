@@ -15,4 +15,5 @@ Prbs : each time a multiplication or a division is made, a new variable is creat
   Use of algorithm d'euclide étendu and bezo coefficient.
   Nombre de solinas : 2^192-2^64-1
 
-  
+# Note
+During this project, I learned that quit logically, it is not possible to use unsigned int in a for (without adding another limit) because number reached are never negatives since it is unsigned.

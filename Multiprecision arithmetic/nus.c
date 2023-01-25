@@ -22,14 +22,14 @@ void nus_aff_x(const nus* nb)
     printf("]\n");
 }
 
-void nus_init(nus **nb, const unsigned int len)
+void nus_init(nus **nb, const int len)
 {
     *nb = (nus *) malloc(sizeof(nus));
     (*nb)->tab = (unsigned long long *) malloc(sizeof(unsigned long long) * len);
     (*nb)->len = len;
 }
 
-void nus_init_0(nus **nb, const unsigned int len)
+void nus_init_0(nus **nb, const int len)
 {
     nus_init(nb, len);
 
@@ -57,8 +57,8 @@ void nus_check_size(nus *nb)
 {
     if (nb->len != 1)
     {
-        unsigned int head = nb->len - 1;
-        while (nb->tab[head] == 0 && head != 1)
+        int head = nb->len - 1;
+        while (nb->tab[head] == 0 && head != 0)
             head--;
         if (nb->tab[head] != 0)
         {
@@ -75,7 +75,7 @@ char nus_check_size_bool(const nus *nb)
 {
     if (nb->len != 1)
     {
-        unsigned int head = nb->len - 1;
+        int head = nb->len - 1;
         while (nb->tab[head] == 0 && head != 1)
             head--;
         if (head == nb->len - 1)
@@ -90,7 +90,7 @@ char nus_check_size_bool(const nus *nb)
 nus* nus_add(const nus* a, const nus* b)
 {
     nus* res;
-    unsigned int size_h, size_l;
+    int size_h, size_l;
     char biggest;
 
     if (a->len > b->len)
@@ -136,7 +136,7 @@ nus* nus_add(const nus* a, const nus* b)
 nus* nus_sub(const nus* a, const nus* b)
 {
     nus* res;
-    unsigned int size_h, size_l;
+    int size_h, size_l;
 
     if (nus_comp(a,b) == 1)
     {
@@ -204,7 +204,7 @@ nus* nus_mul_llu(const unsigned long long a_i, const nus* b)
     return res;
 }
 
-nus* nus_shift_b64_left(const nus* a, const unsigned int shift)
+nus* nus_shift_b64_left(const nus* a, const int shift)
 {
     nus* res;
     nus_init_0(&res, a->len + shift);
@@ -212,18 +212,16 @@ nus* nus_shift_b64_left(const nus* a, const unsigned int shift)
 
     unsigned long long next_part, prv_part; 
 
-    prv_part = 0;
-
-    for (int i = 0; i < shift; i++) // Error is here, why 5 ???
+    for (int i = 0; i < shift; i++)
     {
-        for (int j = -1; j < 5; j++)
+        prv_part = 0;
+        for (int j = 0; j < a->len + shift; j++)
         {
-            next_part = res->tab[i];
-            res->tab[i] = prv_part;
+            next_part = res->tab[j];
+            res->tab[j] = prv_part;
             prv_part = next_part;
         }
     }
-
     return res;
 }
 
@@ -263,7 +261,31 @@ nus* nus_mul(const nus* a, const nus* b)
    return res_new;
 }
 
-void nus_shift_b2_right(nus* a, const unsigned int shift)
+void nus_shift_b2_right_1(nus* a)
+{
+    char ret_last = 0;
+    char ret_next;
+
+    unsigned long long mask = 0;
+    mask = mask | ((unsigned long long) 1 << 63);
+
+    for (int i = a->len - 1; i >= 0; i--)
+    {
+        ret_next = (char) ((a->tab[i] & 0x1));
+        a->tab[i] = a->tab[i] >> 1;
+        a->tab[i] = a->tab[i] | ((unsigned long long) ret_last << 63);
+        ret_last = ret_next;
+    }
+}
+
+void nus_shift_b2_right(nus* a, const int shift)
+{
+    for (int i = 0; i < shift && i < a->len * 64; i++)
+        nus_shift_b2_right_1(a);
+    nus_check_size(a);
+}
+
+/* void nus_shift_b2_right(nus* a, const int shift) // Works only if shift < 64
 {
     unsigned long long ret_last = 0;
     unsigned long long ret_next;
@@ -281,8 +303,10 @@ void nus_shift_b2_right(nus* a, const unsigned int shift)
             ret_last = ret_next;
         }
     }
+    nus_aff_x(a);
     nus_check_size(a);
-}
+    nus_aff_x(a);
+} */
 
 char nus_is_zero(const nus* a)
 {
@@ -332,7 +356,7 @@ nus* nus_mod(const nus* m)
     p->tab[0] = 0xFFFFFFFFFFFFFFFF;
 
     nus_init_0(&q1, 4);
-    p->tab[3] = 0x1;
+    q1->tab[3] = 0x1;
 
     nus* res;
 
@@ -368,6 +392,9 @@ nus* nus_mod_naive(const nus* m)
     p->tab[2] = 0xFFFFFFFFFFFFFFFF;
     p->tab[1] = 0xFFFFFFFFFFFFFFFE;
     p->tab[0] = 0xFFFFFFFFFFFFFFFF;
+
+    nus_init(&res, m->len);
+    nus_cp(m, res);
 
     while(nus_comp(res, p) == 2)
     {

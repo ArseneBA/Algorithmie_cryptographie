@@ -5,10 +5,10 @@
 void test_nus_init()
 {
     nus *a;
-    unsigned int size = 0xff;
+    int size = 0xff;
     nus_init(&a, size);
 
-    for (unsigned int i=0; i < size; i++)
+    for (int i=0; i < size; i++)
     {
         a->tab[i] = i;
     }
@@ -21,10 +21,10 @@ void test_nus_init()
 void test_nus_clear()
 {
     nus *a;
-    unsigned int size = 0xff;
+    int size = 0xff;
     nus_init(&a, size);
 
-    for (unsigned int i=0; i < size; i++)
+    for (int i=0; i < size; i++)
     {
         a->tab[i] = i;
     }
@@ -37,7 +37,7 @@ void test_nus_clear()
     printf("%u", a->len);
 
     // Provoke a segmentation fault/ corrompt the memory
-    for (unsigned int i=0; i < size; i++)
+    for (int i=0; i < size; i++)
     {
         a->tab[i] = i;
     }
@@ -66,11 +66,13 @@ void test_nus_check_size()
 void test_nus_check_size_bool()
 {
     nus* test;
-    nus_init(&test, 10);
+/*     nus_init(&test, 10);
     for (int i = 0; i < 10; i++)
     {
         test->tab[i] = (unsigned long long) i;
-    }
+    } */
+    nus_init_0(&test, 4);
+    test->tab[3] = 0x1;
 
     nus_aff(test);
     char res = nus_check_size_bool(test);
@@ -122,16 +124,17 @@ void test_nus_sub()
     // <*> b>a, (more len and greater with same length)
     // <*> Sub with carry  
     nus *a;
-    nus_init(&a, 3);
-    a->tab[0] = 0x8;
-    a->tab[1] = 0x0;
-    a->tab[2] = 0x2;
+    nus_init(&a, 4);
+    a->tab[0] = 0x7b;
+    a->tab[1] = 0xe125e2;
+    a->tab[2] = 0x456;
+    a->tab[3] = 0xe;
 
     nus* b;
-    nus_init(&b, 3);
-    b->tab[0] = 0x10;
-    b->tab[1] = 0x0;
-    b->tab[2] = 0x1;
+    nus_init(&b, 1);
+    b->tab[2] = 0xFFFFFFFFFFFFFFFF;
+    b->tab[1] = 0xFFFFFFFFFFFFFFFE;
+    b->tab[0] = 0xFFFFFFFFFFFFFFFF;
 
     nus* c;
     c = nus_sub(a, b);
@@ -205,6 +208,21 @@ void test_nus_mul()
     nus_clear(&b); 
 }
 
+void test_nus_shift_b2_right_1()
+{
+    nus *a;
+    nus_init(&a, 3);
+    a->tab[0] = 0xff;
+    a->tab[1] = 0b1000;
+    a->tab[2] = 0xff;
+
+    nus_shift_b2_right_1(a);
+
+    nus_aff_x(a);
+
+    nus_clear(&a);   
+}
+
 void test_nus_shift_b2_right()
 {
     nus *a;
@@ -213,11 +231,11 @@ void test_nus_shift_b2_right()
     a->tab[1] = 0b1000;
     a->tab[2] = 0xff;
 
-    nus_aff(a);
+    nus_aff_x(a);
 
-    nus_shift_b2_right(a, 191);
+    nus_shift_b2_right(a, 4);
 
-    nus_aff(a);
+    nus_aff_x(a);
 
     nus_clear(&a);
 }
@@ -249,10 +267,10 @@ void test_nus_mod()
 {
     nus *m;
     nus_init(&m, 4);
-    m->tab[0] = 0xfe56dc48ab;
-    m->tab[1] = 0xe1234567;
-    m->tab[2] = 0x123456;
-    m->tab[3] = 0x250;
+    m->tab[0] = 0x0;
+    m->tab[1] = 0xe12567;
+    m->tab[2] = 0x456;
+    m->tab[3] = 0x89;
 
     nus* res1, *res2;
     res1 = nus_mod(m);

@@ -14,6 +14,7 @@ void test_nus_sub();
 void test_nus_mul_llu();
 void test_nus_shift_b64_left();
 void test_nus_mul();
+void test_nus_shift_b2_right_1();
 void test_nus_shift_b2_right();
 void test_nus_comp();
 void test_nus_mod();
